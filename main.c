@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 /* Global declarations */
 /* Variables */
@@ -18,6 +19,9 @@ void addChar();
 void getChar();
 void getNonBlank();
 int lex();
+void expr();
+void term();
+void factor();
 
 /* Character classes */
 #define LETTER 0
@@ -237,3 +241,8 @@ void factor() {
 
 printf("Exit <factor>\n");;
 } /* End of function factor */
+
+void error(){
+	printf("Syntax error! ");
+	exit(0);
+}
