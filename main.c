@@ -46,6 +46,7 @@ main() {
 		getChar();
 		do {
 			lex();
+			expr();
 		}while (nextToken != EOF);
 	}
 }
