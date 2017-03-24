@@ -1,6 +1,6 @@
 ﻿Anuraag Rijal
 @02765122
-Ink to project on Github:
+Link to project on Github:
 
 
 https://github.com/anuraagrijal3138/SyntaxAnalysisProgrammingAssignment
