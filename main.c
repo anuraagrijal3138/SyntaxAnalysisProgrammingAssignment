@@ -14,6 +14,12 @@ int token;
 int nextToken;
 FILE *in_fp, *fopen();
 
+
+/* Variables required to handle multiple lines*/
+char * line = NULL;
+int lineIndex;
+char errChar;
+
 /* Function declarations */
 void addChar();
 void getChar();
@@ -22,6 +28,7 @@ int lex();
 void expr();
 void term();
 void factor();
+void error();
 
 /* Character classes */
 #define LETTER 0
@@ -41,18 +48,36 @@ void factor();
 
 /******************************************************/
 /* main driver */
-main() {
+int main(int argc, char* argv[]) {
+	ssize_t readTest;
+	size_t length = 0;
 
 /* Open the input data file and process its contents */
-	if ((in_fp = fopen("front.in", "r")) == NULL)
+
+	/* File name not provided or illegal characters*/
+
+	if(argc != 2){
+		printf("Invalid command");
+		exit(0);
+	}
+
+	if ((in_fp = fopen(argv[1], "r")) == NULL)
 		printf("ERROR - cannot open front.in \n");
 	else {
-		getChar();
-		do {
-			lex();
-			expr();
-		}while (nextToken != EOF);
+		readTest = getline(&line, &length, in_fp);
+		while(readTest != -1){
+			lineIndex = 0;
+			getChar();
+			if(line != NULL){
+				do {
+					lex();
+					expr();
+				}while (nextToken != EOF);
+			}
+			readTest = getline(&line, &length, in_fp);		
+		}
 	}
+	return 0;
 }
 
 /*****************************************************/
@@ -108,7 +133,8 @@ void addChar() {
 /* getChar - a function to get the next character of
 input and determine its character class */
 void getChar() {
-	if ((nextChar = getc(in_fp)) != EOF) {
+	if (line[lineIndex] != '\n' && line[lineIndex] != '\0') {
+		nextChar = line[lineIndex ++];
 		if (isalpha(nextChar))
 			charClass = LETTER;
 	else if (isdigit(nextChar))
@@ -127,13 +153,13 @@ void getNonBlank() {
 		getChar();
 }
 
-/
-*****************************************************/
+/*****************************************************/
 /* lex - a simple lexical analyzer for arithmetic
 expressions */
 int lex() {
 	lexLen = 0;
 	getNonBlank();
+	errChar = nextChar;
 	switch (charClass) {
 		/* Parse identifiers */
 		case LETTER:
@@ -243,6 +269,6 @@ printf("Exit <factor>\n");;
 } /* End of function factor */
 
 void error(){
-	printf("Syntax error! ");
-	exit(0);
+	printf("%s\n", line);
+	printf("Error! occurs at %c\n", errChar);
 }
